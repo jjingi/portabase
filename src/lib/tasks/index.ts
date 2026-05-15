@@ -22,7 +22,7 @@ export const retentionJob = cron.schedule(env.RETENTION_CRON, async () => {
 
 export const cleaningJob = cron.schedule("* * * * *", async () => {
     try {
-        log.info({ job: "cron", action: "start", name: "cleaningJob" }, "Cleaning Job started");
+        log.debug({ job: "cron", action: "start", name: "cleaningJob" }, "Cleaning Job started");
         await backupCleanTask();
     } catch (err) {
         log.error({ job: "cron", name: "cleaningJob", error: err }, "Cleaning Job Error");
