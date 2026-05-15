@@ -22,7 +22,9 @@ import {passkey} from "@better-auth/passkey";
 import {getOidcProviders} from "./oidc";
 import {APIError} from "better-auth/api";
 import {getOAuthProviders} from "./oauth";
+import { logger } from "@/lib/logger";
 
+const log = logger.child({ module: "lib/auth" });
 
 const oidcProviders = getOidcProviders();
 
@@ -438,9 +440,7 @@ export const auth = betterAuth({
                         new Date(user.createdAt).getTime();
 
                     if (createdAtDiff < 5000) {
-                        console.log(
-                            `Skipping new login email for freshly created user ${user.email}`,
-                        );
+                        log.debug(`Skipping new login email for freshly created user ${user.email}`);
                         return;
                     }
 
@@ -471,12 +471,12 @@ export const auth = betterAuth({
                             ),
                         });
                     } catch (error) {
-                        console.log("sendEmail failed", {
+                        log.error({
                             userId: user.id,
                             details: "Please Check your env variables or system config",
                             email: user.email,
                             error,
-                        });
+                        }, "sendEmail failed");
                     }
 
                     (await auth.$context).internalAdapter.updateUser(user.id, {
@@ -784,7 +784,7 @@ export const getActiveMember = async () => {
 
         return member as MemberWithUser;
     } catch (e) {
-        console.log("err", e);
+        log.error({ error: e }, "Auth error");
     }
 };
 

@@ -1,5 +1,6 @@
 "use server";
 import {userAction} from "@/lib/safe-actions/actions";
+import {logger} from "@/lib/logger";
 import {z} from "zod";
 import {v4 as uuidv4} from "uuid";
 import {db} from "@/db";
@@ -10,6 +11,7 @@ import {dispatchStorage} from "@/features/storages/dispatch";
 import {StorageInput} from "@/features/storages/types";
 import sharp from "sharp";
 
+const log = logger.child({module: "features/upload/upload.action"});
 
 export const uploadUserImageAction = userAction.schema(
     z.instanceof(FormData)
@@ -27,13 +29,12 @@ export const uploadUserImageAction = userAction.schema(
         const isWebp = fileFormat === "webp";
 
         const compressedBuffer = await sharp(buffer)
-            .resize({ width: 1024 })
+            .resize({width: 1024})
             .toFormat(isPng ? "png" : isWebp ? "webp" : "jpeg", {
                 quality: 80,
                 compressionLevel: isPng ? 9 : undefined
             })
             .toBuffer();
-
 
 
         const settings = await db.query.setting.findFirst({
@@ -69,7 +70,7 @@ export const uploadUserImageAction = userAction.schema(
         }
 
         const result = await dispatchStorage(input, undefined, settings.storageChannel.id);
-        console.log(result);
+        log.debug({result}, "Upload dispatch result");
         if (!result.success) {
             return {
                 success: false,

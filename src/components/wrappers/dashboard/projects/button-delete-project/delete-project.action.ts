@@ -1,12 +1,15 @@
 "use server";
 
 import {userAction} from "@/lib/safe-actions/actions";
+import { logger } from "@/lib/logger";
 import {z} from "zod";
 import {v4 as uuidv4} from "uuid";
 import {ServerActionResult} from "@/types/action-type";
-import {and, eq, inArray} from "drizzle-orm";
+import {eq, inArray} from "drizzle-orm";
 import {db} from "@/db";
 import * as drizzleDb from "@/db";
+
+const log = logger.child({ module: "dashboard/delete-project.action" });
 
 export const deleteProjectAction = userAction.schema(z.string()).action(async ({parsedInput}): Promise<ServerActionResult<typeof drizzleDb.schemas.project.$inferSelect>> => {
     try {
@@ -51,7 +54,7 @@ export const deleteProjectAction = userAction.schema(z.string()).action(async ({
             },
         };
     } catch (error) {
-        console.log(error);
+        log.error({ error }, "Failed to archive project");
         return {
             success: false,
             actionError: {

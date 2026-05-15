@@ -11,6 +11,9 @@ import {StorageChannel} from "@/db/schema/12_storage-channel";
 import {
     StorageChannelFormType
 } from "@/components/wrappers/dashboard/admin/channels/channel/channel-form/channel-form.schema";
+import { logger } from "@/lib/logger";
+
+const log = logger.child({ module: "features/storages/dispatch" });
 
 
 export async function dispatchStorage(
@@ -103,7 +106,7 @@ export async function dispatchStorage(
             input,
         );
 
-        console.log(dispatchResult);
+        log.debug({ result: dispatchResult }, "Storage dispatch result");
         return dispatchResult;
 
     } catch (err: any) {

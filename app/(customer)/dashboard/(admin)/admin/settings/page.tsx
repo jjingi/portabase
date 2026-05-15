@@ -1,6 +1,7 @@
 import {PageParams} from "@/types/next";
 import {Page, PageContent, PageHeader, PageTitle} from "@/features/layout/page";
 import {db} from "@/db";
+import {logger} from "@/lib/logger";
 import {notFound} from "next/navigation";
 import {SettingsTabs} from "@/components/wrappers/dashboard/admin/settings/settings-tabs";
 import {desc, isNull} from "drizzle-orm";
@@ -8,13 +9,15 @@ import * as drizzleDb from "@/db";
 import {StorageChannelWith} from "@/db/schema/12_storage-channel";
 import {NotificationChannelWith} from "@/db/schema/09_notification-channel";
 
+const log = logger.child({module: "dashboard/admin/settings"});
+
 export default async function RoutePage(props: PageParams<{}>) {
 
     const settings = await db.query.setting.findFirst({
         where: (fields, {eq}) => eq(fields.name, "system"),
     });
 
-    console.log(settings)
+    log.debug({settings}, "Settings loaded");
 
     const storageChannels = await db.query.storageChannel.findMany({
         with: {
@@ -33,7 +36,7 @@ export default async function RoutePage(props: PageParams<{}>) {
     }) as NotificationChannelWith[]
 
 
-    if (!settings || !storageChannels || !notificationChannels ) {
+    if (!settings || !storageChannels || !notificationChannels) {
         notFound()
     }
 
@@ -45,7 +48,8 @@ export default async function RoutePage(props: PageParams<{}>) {
                 </div>
             </PageHeader>
             <PageContent className="flex flex-col gap-5">
-                <SettingsTabs storageChannels={storageChannels} notificationChannels={notificationChannels} settings={settings} />
+                <SettingsTabs storageChannels={storageChannels} notificationChannels={notificationChannels}
+                              settings={settings}/>
             </PageContent>
         </Page>
     );

@@ -14,7 +14,7 @@ export const backupCleanTask = async () => {
                 eq(drizzleDb.schemas.backup.status, "ongoing")
             )
         });
-        log.info(`Backups to clean: ${backups.length}`);
+        log.debug(`Backups to clean: ${backups.length}`);
 
         for (const backup of backups) {
             await db.update(drizzleDb.schemas.backup).set(withUpdatedAt({
@@ -24,7 +24,7 @@ export const backupCleanTask = async () => {
         }
 
     } catch (e: any) {
-        log.info({name: "backupCleanTask", error: e},`Backup cleanup failed`);
+        log.error({name: "backupCleanTask", error: e},`Backup cleanup failed`);
         throw e;
     }
 };

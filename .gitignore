@@ -55,3 +55,7 @@ certificates
 /playwright/.cache/
 /playwright/.auth/
 /e2e/local-storage.json
+
+.claude
+.codex
+/docs
