@@ -132,37 +132,41 @@ export const auth = betterAuth({
         },
     },
     plugins: [
-        apiKey([
-            {
-                configId: "public",
-                defaultPrefix: "pk_",
-                rateLimit: {
-                    enabled: true,
-                    maxRequests: 100,
-                    timeWindow: 1000 * 60 * 60, // 100 requests / hour
-                },
-            },
-            {
-                configId: "standard",
-                defaultPrefix: "sk_",
-                enableMetadata: true,
-                rateLimit: {
-                    enabled: true,
-                    maxRequests: 1000,
-                    timeWindow: 1000 * 60 * 60, // 1000 requests / hour
-                },
-            },
-            {
-                configId: "internal",
-                defaultPrefix: "int_",
-                enableMetadata: true,
-                rateLimit: {
-                    enabled: true,
-                    maxRequests: 10_000,
-                    timeWindow: 1000 * 60 * 60, // 10k requests / hour
-                },
-            },
-        ]),
+        ...(env.API_ENABLED
+            ? [
+                apiKey([
+                    {
+                        configId: "public",
+                        defaultPrefix: "pk_",
+                        rateLimit: {
+                            enabled: true,
+                            maxRequests: 100,
+                            timeWindow: 1000 * 60 * 60, // 100 requests / hour
+                        },
+                    },
+                    {
+                        configId: "standard",
+                        defaultPrefix: "sk_",
+                        enableMetadata: true,
+                        rateLimit: {
+                            enabled: true,
+                            maxRequests: 1000,
+                            timeWindow: 1000 * 60 * 60, // 1000 requests / hour
+                        },
+                    },
+                    {
+                        configId: "internal",
+                        defaultPrefix: "int_",
+                        enableMetadata: true,
+                        rateLimit: {
+                            enabled: true,
+                            maxRequests: 10_000,
+                            timeWindow: 1000 * 60 * 60, // 10k requests / hour
+                        },
+                    },
+                ]),
+            ]
+            : []),
         sso({
             defaultSSO: oidcProviders.map((p) => ({
                 oidcConfig: {

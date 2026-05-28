@@ -19,9 +19,10 @@ type ProfileModalProps = {
     accounts: Account[];
     onOpenChange: (open: boolean) => void;
     providers: AuthProviderConfig[];
+    apiEnabled: boolean;
 };
 
-export const ProfileModal = ({ user, sessions, currentSession, accounts, open, onOpenChange, providers }: ProfileModalProps) => {
+export const ProfileModal = ({ user, sessions, currentSession, accounts, open, onOpenChange, providers, apiEnabled }: ProfileModalProps) => {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="w-[95vw] h-[90vh] max-w-md lg:max-w-[1000px] lg:h-[800px] pb-6 p-0 overflow-hidden flex flex-col outline-none gap-0 rounded-xl bg-background">
@@ -54,7 +55,7 @@ export const ProfileModal = ({ user, sessions, currentSession, accounts, open, o
                         </TabsContent>
 
                         <TabsContent value="account" className="mt-0 h-full p-6 lg:p-10 outline-none focus-visible:ring-0">
-                            <ProfileAccount user={user} />
+                            <ProfileAccount user={user} apiEnabled={apiEnabled} />
                         </TabsContent>
 
                         <TabsContent value="appearance" className="mt-0 h-full p-6 lg:p-10 outline-none focus-visible:ring-0">

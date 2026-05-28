@@ -48,9 +48,11 @@ import { copyToClipboardWithMeta } from "@/components/common/copy-button";
 
 interface ProfileAccountProps {
     user: User;
+    apiEnabled: boolean;
 }
 
-export function ProfileAccount({ user }: ProfileAccountProps) {
+export function ProfileAccount({ user, apiEnabled }: ProfileAccountProps) {
+
     const router = useRouter();
 
     const [isAddApiKeyOpen, setIsAddApiKeyOpen] = useState(false);
@@ -158,20 +160,6 @@ export function ProfileAccount({ user }: ProfileAccountProps) {
 
     const { mutate: addApiKey, isPending: isAddingApikey } = useMutation({
         mutationFn: async () => {
-
-            // const permissions = {
-            //     organization: ["read", "read-write"],
-            // }
-            //
-            // const result = await authClient.apiKey.create({
-            //     name: apiKeyName || "My API Key",
-            //     prefix: "sk_",
-            //     permissions
-            // });
-            //
-            // if (result?.error) {
-            //     throw result.error;
-            // }
 
             const result = await createApiKeysAction({
                 name: apiKeyName || "My API Key"
@@ -335,6 +323,7 @@ export function ProfileAccount({ user }: ProfileAccountProps) {
                     </Form>
                 </div>
 
+                {apiEnabled === true && (
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
                         <div className="space-y-1">
@@ -434,6 +423,7 @@ export function ProfileAccount({ user }: ProfileAccountProps) {
                         )}
                     </div>
                 </div>
+                )}
             </div>
 
             <Dialog

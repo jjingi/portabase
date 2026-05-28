@@ -6,8 +6,6 @@ import { headers } from "next/headers";
 import { env } from "@/env.mjs";
 import {User} from "@/db/schema/02_user";
 
-const OPENAPI_ENABLED = String(env.OPENAPI_ENABLED).toLowerCase() === "true";
-
 export async function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
   const redirectUrl = encodeURIComponent(request.nextUrl.pathname);
@@ -44,6 +42,33 @@ export async function proxy(request: NextRequest) {
   }
 
   if (url.pathname.startsWith("/api")) {
+    if (url.pathname.startsWith("/api/v1")) {
+      const apiEnabled = String(env.API_ENABLED) === "true";
+      if (!apiEnabled) {
+        return new NextResponse(
+          JSON.stringify({
+            message: "This API route does not exist.",
+            status: 404,
+          }),
+          { status: 404, headers: { "Content-Type": "application/json" } },
+        );
+      }
+      const openapiEnabled = String(env.OPENAPI_ENABLED) === "true";
+      if (
+        !openapiEnabled &&
+        (url.pathname.startsWith("/api/v1/docs") ||
+          url.pathname.startsWith("/api/v1/openapi"))
+      ) {
+        return new NextResponse(
+          JSON.stringify({
+            message: "This API route does not exist.",
+            status: 404,
+          }),
+          { status: 404, headers: { "Content-Type": "application/json" } },
+        );
+      }
+    }
+
     const routeExists = checkRouteExists(url.pathname);
     if (!routeExists) {
       return new NextResponse(
@@ -80,16 +105,8 @@ function checkRouteExists(pathname: string) {
     /^\/api\/health\/?$/,
     /^\/api\/google\/drive\/callback\/?$/,
     // v1 external API
-
-
-    ...(OPENAPI_ENABLED
-        ? [
-          /^\/api\/v1\/docs\/?$/,
-          /^\/api\/v1\/openapi\/?$/,
-        ]
-        : []),
-
-
+    /^\/api\/v1\/docs\/?$/,
+    /^\/api\/v1\/openapi\/?$/,
     /^\/api\/v1\/agents\/?$/,
     /^\/api\/v1\/agents\/[^/]+\/?$/,
     /^\/api\/v1\/agents\/[^/]+\/key\/?$/,

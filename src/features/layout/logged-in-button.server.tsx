@@ -2,6 +2,7 @@ import { currentUser } from "@/lib/auth/current-user";
 import { getAccounts, getSession, getSessions } from "@/lib/auth/auth";
 import { LoggedInButtonClient } from "./logged-in-button";
 import { SUPPORTED_PROVIDERS } from "@/lib/auth/config";
+import { env } from "@/env.mjs";
 
 export const LoggedInButton = async () => {
     const user = await currentUser();
@@ -11,6 +12,7 @@ export const LoggedInButton = async () => {
 
     if (!user) return null;
 
+
     return (
         <LoggedInButtonClient
             user={user}
@@ -19,6 +21,7 @@ export const LoggedInButton = async () => {
             currentSession={currentSession.session}
             accounts={accounts}
             providers={SUPPORTED_PROVIDERS.filter((p) => p.isActive)}
+            apiEnabled={env.API_ENABLED}
         />
     );
 };

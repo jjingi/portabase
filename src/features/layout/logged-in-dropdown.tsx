@@ -16,9 +16,10 @@ export type LoggedInDropdownProps = PropsWithChildren<{
     accounts: Account[];
     children: ReactNode;
     providers: AuthProviderConfig[];
+    apiEnabled: boolean;
 }>;
 
-export const LoggedInDropdown = ({ user, sessions, currentSession, accounts, children, providers }: LoggedInDropdownProps) => {
+export const LoggedInDropdown = ({ user, sessions, currentSession, accounts, children, providers, apiEnabled }: LoggedInDropdownProps) => {
     const router = useRouter();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,6 +34,7 @@ export const LoggedInDropdown = ({ user, sessions, currentSession, accounts, chi
                 open={isModalOpen}
                 onOpenChange={setIsModalOpen}
                 providers={providers}
+                apiEnabled={apiEnabled}
             />
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>

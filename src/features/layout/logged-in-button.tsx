@@ -14,9 +14,10 @@ type LoggedInButtonClientProps = {
     currentSession: Session;
     accounts: Account[];
     providers: AuthProviderConfig[];
+    apiEnabled: boolean;
 };
 
-export const LoggedInButtonClient = ({ user, sessions, currentSession, accounts, providers }: LoggedInButtonClientProps) => {
+export const LoggedInButtonClient = ({ user, sessions, currentSession, accounts, providers, apiEnabled }: LoggedInButtonClientProps) => {
     return (
         <LoggedInDropdown
             user={user}
@@ -27,6 +28,7 @@ export const LoggedInButtonClient = ({ user, sessions, currentSession, accounts,
             // @ts-ignore
             accounts={accounts}
             providers={providers}
+            apiEnabled={apiEnabled}
         >
             <SidebarMenuButton type="button" className="h-auto justify-between py-2" data-testid="profile-dropdown">
                 <div className="flex items-center gap-2">
