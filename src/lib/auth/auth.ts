@@ -713,6 +713,7 @@ export const deleteApiKey = async (keyId: string) => {
     await auth.api.deleteApiKey({
         body: {
             keyId: keyId,
+            configId: "standard",
         },
         headers: await headers(),
     });

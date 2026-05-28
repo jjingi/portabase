@@ -78,6 +78,14 @@ export function withApiKey(handler: ApiKeyHandler) {
         throw new Error("Unable to find user")
       }
 
+      if (userFetched.banned) {
+        return NextResponse.json({ error: "Account suspended" }, { status: 403 });
+      }
+
+      if (userFetched.role === "pending") {
+        return NextResponse.json({ error: "Account pending approval" }, { status: 403 });
+      }
+
       const userPermissions = computeSystemPermissions(userFetched)
 
       const user = {
