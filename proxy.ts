@@ -3,6 +3,10 @@ import { loggingMiddleware } from "@/middleware/loggingMiddleware";
 import { errorHandler } from "@/middleware/errorHandler";
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
+import { env } from "@/env.mjs";
+import {User} from "@/db/schema/02_user";
+
+const OPENAPI_ENABLED = String(env.OPENAPI_ENABLED).toLowerCase() === "true";
 
 export async function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
@@ -17,11 +21,13 @@ export async function proxy(request: NextRequest) {
         new URL(`/login?redirect=${redirectUrl}`, request.url),
       );
     }
-    if (session.user.banned) {
+    const user = session.user as User
+
+    if (user.banned) {
       await auth.api.signOut({ headers: await headers() });
       return NextResponse.redirect(new URL("/login?error=banned", request.url));
     }
-    if (session.user.role === "pending") {
+    if (user.role === "pending") {
       await auth.api.signOut({ headers: await headers() });
       return NextResponse.redirect(
         new URL(`/login?error=pending?redirect=${redirectUrl}`, request.url),
@@ -74,8 +80,16 @@ function checkRouteExists(pathname: string) {
     /^\/api\/health\/?$/,
     /^\/api\/google\/drive\/callback\/?$/,
     // v1 external API
-    /^\/api\/v1\/docs\/?$/,
-    /^\/api\/v1\/openapi\/?$/,
+
+
+    ...(OPENAPI_ENABLED
+        ? [
+          /^\/api\/v1\/docs\/?$/,
+          /^\/api\/v1\/openapi\/?$/,
+        ]
+        : []),
+
+
     /^\/api\/v1\/agents\/?$/,
     /^\/api\/v1\/agents\/[^/]+\/?$/,
     /^\/api\/v1\/agents\/[^/]+\/key\/?$/,

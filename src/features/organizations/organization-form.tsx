@@ -24,14 +24,13 @@ import {
     updateOrganizationAction
 } from "@/features/organizations/organization.action";
 import {toast} from "sonner";
-import {User as BetterAuthUser} from "better-auth";
 import {User} from "@/db/schema/02_user";
 import {authClient} from "@/lib/auth/auth-client";
 
 export type organizationFormProps = {
     defaultValues?: OrganizationWithMembers;
     users: User[];
-    currentUser: BetterAuthUser;
+    currentUser: User;
     onSuccess?: (data: any) => void;
 };
 

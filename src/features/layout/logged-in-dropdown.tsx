@@ -1,19 +1,12 @@
 "use client";
 
 import { PropsWithChildren, ReactNode, useState } from "react";
-
 import { useRouter } from "next/navigation";
-
 import { LogOut, User } from "lucide-react";
-
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { signOut } from "@/lib/auth/auth-client";
-
 import { ProfileModal } from "@/features/layout/profile-modal";
-
 import { Account, Session, User as UserType } from "@/db/schema/02_user";
-
 import { AuthProviderConfig } from "@/lib/auth/config";
 
 export type LoggedInDropdownProps = PropsWithChildren<{
