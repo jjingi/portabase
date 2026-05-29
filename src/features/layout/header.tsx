@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import {notFound} from "next/navigation";
-
 import {SidebarTrigger} from "@/components/ui/sidebar";
 import {currentUser} from "@/lib/auth/current-user";
 import {BreadCrumbsWrapper} from "@/components/common/bread-crumbs";
@@ -18,7 +17,6 @@ export const Header = async ({ actions }: { actions?: ReactNode } = {}) => {
                 <SidebarTrigger className="-ml-1"/>
                 <BreadCrumbsWrapper/>
             </div>
-
             <div className="flex items-center gap-2">
                 <GitHubStarsButtonCustom/>
                 {actions}

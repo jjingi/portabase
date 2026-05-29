@@ -22,7 +22,8 @@ import {passkey} from "@better-auth/passkey";
 import {getOidcProviders} from "./oidc";
 import {APIError} from "better-auth/api";
 import {getOAuthProviders} from "./oauth";
-import { logger } from "@/lib/logger";
+import {logger} from "@/lib/logger";
+import {apiKey} from "@better-auth/api-key"
 
 const log = logger.child({ module: "lib/auth" });
 
@@ -130,8 +131,42 @@ export const auth = betterAuth({
             allowDifferentEmails: true,
         },
     },
-
     plugins: [
+        ...(env.API_ENABLED
+            ? [
+                apiKey([
+                    {
+                        configId: "public",
+                        defaultPrefix: "pk_",
+                        rateLimit: {
+                            enabled: true,
+                            maxRequests: 100,
+                            timeWindow: 1000 * 60 * 60, // 100 requests / hour
+                        },
+                    },
+                    {
+                        configId: "standard",
+                        defaultPrefix: "sk_",
+                        enableMetadata: true,
+                        rateLimit: {
+                            enabled: true,
+                            maxRequests: 1000,
+                            timeWindow: 1000 * 60 * 60, // 1000 requests / hour
+                        },
+                    },
+                    {
+                        configId: "internal",
+                        defaultPrefix: "int_",
+                        enableMetadata: true,
+                        rateLimit: {
+                            enabled: true,
+                            maxRequests: 10_000,
+                            timeWindow: 1000 * 60 * 60, // 10k requests / hour
+                        },
+                    },
+                ]),
+            ]
+            : []),
         sso({
             defaultSSO: oidcProviders.map((p) => ({
                 oidcConfig: {
@@ -259,7 +294,6 @@ export const auth = betterAuth({
             ]
             : []),
         openAPI(),
-        nextCookies(),
         twoFactor(),
         organization({
             ac,
@@ -280,6 +314,7 @@ export const auth = betterAuth({
                 superadmin,
             },
         }),
+        nextCookies(),
     ],
     advanced: {
         database: {
@@ -498,35 +533,6 @@ export const auth = betterAuth({
             },
         },
     },
-    /*    databaseHooks: {
-          session: {
-              create: {
-                  before: async (session) => {
-                      const organizationId = await getLastOrganizationOrFirst(session.userId);
-
-                      if (!organizationId) {
-                          return {
-                              ...session,
-                          };
-                      }
-
-
-                      const [aa] = await db
-                          .update(drizzleUser.session)
-                          .set({ activeOrganizationId: organizationId })
-                          .where(eq(drizzleUser.session.id, session.id))
-                          .returning();
-
-
-                      return {
-                          ...session,
-                          activeOrganizationId: organizationId,
-                      };
-                  },
-              },
-          },
-      },*/
-    // trustedOrigins: [env.PROJECT_URL!, "http://app"],
     trustedOrigins: async (request) => {
         const trustedOrigins = await queryTrustedDomains();
         return trustedOrigins;
@@ -546,29 +552,6 @@ const queryTrustedDomains = async (): Promise<string[]> => {
 
     return domains;
 };
-
-/*export const signUpUser = async (email: string, password: string, name: string) => {
-    const user = await auth.api.signUpEmail({
-        body: {
-            email,
-            password,
-            name,
-        },
-    });
-
-    return user;
-};
-
-export const signInUser = async (email: string, password: string) => {
-    const user = await auth.api.signInEmail({
-        body: {
-            email,
-            password,
-        },
-    });
-
-    return user;
-};*/
 
 export const createUser = async (
     name: string,
@@ -658,6 +641,34 @@ export const getOrganization = async ({
         console.error(e);
         return null;
     }
+};
+
+
+export const getApiKeys = async () => {
+    return await auth.api.listApiKeys({
+        headers: await headers(),
+    });
+};
+
+export const createApiKey = async (name: string) => {
+    return await auth.api.createApiKey({
+        body: {
+            name,
+            configId: "standard",
+        },
+        headers: await headers(),
+    });
+};
+
+
+export const deleteApiKey = async (keyId: string) => {
+    await auth.api.deleteApiKey({
+        body: {
+            keyId: keyId,
+            configId: "standard",
+        },
+        headers: await headers(),
+    });
 };
 
 export const getPasskeys = async () => {

@@ -1,5 +1,5 @@
 "use server";
-import {ActionError, userAction} from "@/lib/safe-actions/actions";
+import {action, ActionError, userAction} from "@/lib/safe-actions/actions";
 import {AgentSchema} from "@/features/agents/agents.schema";
 import {z} from "zod";
 import {eq, and, ne, count} from "drizzle-orm";
@@ -16,24 +16,47 @@ const verifySlugUniqueness = async (slug: string, agentId?: string) => {
     }
 };
 
+
+
+type CreateAgentInput = {
+    organizationId?: string;
+    data: z.infer<typeof AgentSchema>;
+};
+
+export async function createAgentService(input: CreateAgentInput) {
+    const slug = slugify(input.data.name);
+
+    await verifySlugUniqueness(slug);
+
+    const [createdAgent] = await db
+        .insert(drizzleDb.schemas.agent)
+        .values({
+            ...input.data,
+            slug,
+            organizationId: input.organizationId,
+        })
+        .returning();
+
+    if (createdAgent && input.organizationId) {
+        await db.insert(drizzleDb.schemas.organizationAgent).values({
+            organizationId: input.organizationId,
+            agentId: createdAgent.id,
+        });
+    }
+
+    return createdAgent;
+}
+
+
+
+
 export const createAgentAction = userAction.schema(
     z.object({
         organizationId: z.string().optional(),
         data: AgentSchema,
     })
 ).action(async ({parsedInput}) => {
-    const slug = slugify(parsedInput.data.name);
-    await verifySlugUniqueness(slug);
-
-    const [createdAgent] = await db.insert(drizzleDb.schemas.agent).values({...parsedInput.data, slug: slug, organizationId: parsedInput.organizationId}).returning();
-
-    if (createdAgent && parsedInput.organizationId){
-            await db.insert(drizzleDb.schemas.organizationAgent).values({
-                organizationId: parsedInput.organizationId,
-                agentId: createdAgent.id,
-            });
-    }
-
+    const createdAgent = await createAgentService(parsedInput);
     return {
         data: createdAgent,
     };

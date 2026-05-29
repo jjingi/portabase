@@ -8,18 +8,17 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import {OrganizationForm} from "@/features/organizations/organization-form";
-import {ReactNode, useState} from "react";
-import {Button, buttonVariants} from "@/components/ui/button";
+import {useState} from "react";
+import {buttonVariants} from "@/components/ui/button";
 import {GearIcon} from "@radix-ui/react-icons";
 import {OrganizationWithMembers} from "@/db/schema/03_organization";
 import {User} from "@/db/schema/02_user";
-import {User as BetterAuthUser} from "better-auth";
 import {useRouter} from "next/navigation";
 
 type EditOrganizationDialogProps = {
     organization: OrganizationWithMembers;
     users: User[];
-    currentUser: BetterAuthUser;
+    currentUser: User;
 };
 
 export const EditOrganizationDialog = ({

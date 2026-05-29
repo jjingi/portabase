@@ -98,6 +98,16 @@ export const env = createEnv({
         AUTH_ALLOW_UNLINKING: z.enum(["true", "false"]).default("true"),
 
         PRIVATE_PATH: z.string().optional(),
+
+        OPENAPI_ENABLED: z
+            .enum(["true", "false"])
+            .transform((val) => val === "true")
+            .default("false"),
+
+        API_ENABLED: z
+            .enum(["true", "false"])
+            .transform((val) => val === "true")
+            .default("false"),
     },
     client: {
         NEXT_PUBLIC_PROJECT_VERSION: z.string().optional(),
@@ -170,5 +180,8 @@ export const env = createEnv({
         AUTH_DEFAULT_USER_NAME: process.env.AUTH_DEFAULT_USER_NAME,
         AUTH_DEFAULT_USER: process.env.AUTH_DEFAULT_USER,
         AUTH_DEFAULT_PASSWORD: process.env.AUTH_DEFAULT_PASSWORD,
+
+        OPENAPI_ENABLED: process.env.OPENAPI_ENABLED,
+        API_ENABLED: process.env.API_ENABLED,
     },
 });

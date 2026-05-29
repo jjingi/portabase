@@ -4,8 +4,9 @@ import { ChevronsUpDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { LoggedInDropdown } from "./logged-in-dropdown";
-import { Account, Session, User } from "better-auth";
+import { Account, Session } from "better-auth";
 import { AuthProviderConfig } from "@/lib/auth/config";
+import {User} from "@/db/schema/02_user";
 
 type LoggedInButtonClientProps = {
     user: User;
@@ -13,12 +14,12 @@ type LoggedInButtonClientProps = {
     currentSession: Session;
     accounts: Account[];
     providers: AuthProviderConfig[];
+    apiEnabled: boolean;
 };
 
-export const LoggedInButtonClient = ({ user, sessions, currentSession, accounts, providers }: LoggedInButtonClientProps) => {
+export const LoggedInButtonClient = ({ user, sessions, currentSession, accounts, providers, apiEnabled }: LoggedInButtonClientProps) => {
     return (
         <LoggedInDropdown
-            // @ts-ignore
             user={user}
             // @ts-ignore
             sessions={sessions}
@@ -27,6 +28,7 @@ export const LoggedInButtonClient = ({ user, sessions, currentSession, accounts,
             // @ts-ignore
             accounts={accounts}
             providers={providers}
+            apiEnabled={apiEnabled}
         >
             <SidebarMenuButton type="button" className="h-auto justify-between py-2" data-testid="profile-dropdown">
                 <div className="flex items-center gap-2">

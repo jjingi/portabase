@@ -2,7 +2,7 @@
 
 import React from "react";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserIcon, Settings, Palette, ShieldHalf, Workflow } from "lucide-react";
+import { UserIcon, Settings, Palette, ShieldHalf, Workflow, KeyRound } from "lucide-react";
 import { User } from "@/db/schema/02_user";
 
 interface ProfileSidebarProps {
