@@ -66,6 +66,7 @@ export async function requireDatabaseAccess(
 
     const access = await resolveDatabaseAccess(id, user);
 
+
     if (access === "ok") {
         return {
             ok: true,
@@ -80,31 +81,55 @@ export async function requireDatabaseAccess(
         };
     }
 
+    if (access === "no_project_link") {
+        return {
+            ok: false,
+            response: jsonError("Database is not linked to any project", 403),
+        };
+    }
+
+
     return {
         ok: false,
         response: jsonError("Not found", 404),
     };
 }
 
-export type DatabaseAccessResult = "ok" | "forbidden" | "not_found";
+export type DatabaseAccessResult =
+    | "ok"
+    | "forbidden"
+    | "not_found"
+    | "no_project_link";
 
 export async function resolveDatabaseAccess(
     id: string,
     user: ApiKeyContext["user"]
 ): Promise<DatabaseAccessResult> {
-    const accessibleIds = await getAccessibleDatabaseIds(user);
+    const [accessibleIds, database] = await Promise.all([
+        getAccessibleDatabaseIds(user),
+        db.query.database.findFirst({
+            where: and(
+                eq(drizzleDb.schemas.database.id, id),
+                isNull(drizzleDb.schemas.database.deletedAt)
+            ),
+            columns: {
+                id: true,
+                projectId: true,
+            },
+        }),
+    ]);
+
+    if (!database) {
+        return "not_found";
+    }
+
+    if (database.projectId === null) {
+        return "no_project_link";
+    }
 
     if (accessibleIds.includes(id)) {
         return "ok";
     }
 
-    const exists = await db.query.database.findFirst({
-        where: and(
-            eq(drizzleDb.schemas.database.id, id),
-            isNull(drizzleDb.schemas.database.deletedAt)
-        ),
-        columns: { id: true },
-    });
-
-    return exists ? "forbidden" : "not_found";
+    return "forbidden";
 }
