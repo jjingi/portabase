@@ -43,7 +43,7 @@ export async function proxy(request: NextRequest) {
 
   if (url.pathname.startsWith("/api")) {
     if (url.pathname.startsWith("/api/v1")) {
-      const apiEnabled = String(env.API_ENABLED) === "true";
+      const apiEnabled = env.API_ENABLED;
       if (!apiEnabled) {
         return new NextResponse(
           JSON.stringify({
@@ -53,7 +53,7 @@ export async function proxy(request: NextRequest) {
           { status: 404, headers: { "Content-Type": "application/json" } },
         );
       }
-      const openapiEnabled = String(env.OPENAPI_ENABLED) === "true";
+      const openapiEnabled = env.OPENAPI_ENABLED;
       if (
         !openapiEnabled &&
         (url.pathname.startsWith("/api/v1/docs") ||
@@ -105,6 +105,7 @@ function checkRouteExists(pathname: string) {
     /^\/api\/health\/?$/,
     /^\/api\/google\/drive\/callback\/?$/,
     // v1 external API
+    /^\/api\/v1\/mcp\/?$/,
     /^\/api\/v1\/docs\/?$/,
     /^\/api\/v1\/openapi\/?$/,
     /^\/api\/v1\/agents\/?$/,
