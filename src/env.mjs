@@ -36,8 +36,8 @@ export const env = createEnv({
 
         SMTP_SECURE: z
             .enum(["true", "false"])
-            .transform((val) => val === "true")
-            .default("true"),
+            .default("true")
+            .transform((val) => val === "true"),
 
         AUTH_GOOGLE_ID: z.string().optional(),
         AUTH_GOOGLE_SECRET: z.string().optional(),
@@ -101,18 +101,23 @@ export const env = createEnv({
 
         OPENAPI_ENABLED: z
             .enum(["true", "false"])
-            .transform((val) => val === "true")
-            .default("false"),
+            .default("false")
+            .transform((val) => val === "true"),
 
         API_ENABLED: z
             .enum(["true", "false"])
-            .transform((val) => val === "true")
-            .default("false"),
+            .default("false")
+            .transform((val) => val === "true"),
 
         MCP_ENABLED: z
             .enum(["true", "false"])
-            .transform((val) => val === "true")
-            .default("false"),
+            .default("false")
+            .transform((val) => val === "true"),
+
+        DEMO_ENABLED: z
+            .enum(["true", "false"])
+            .default("false")
+            .transform((val) => val === "true"),
     },
     client: {
         NEXT_PUBLIC_PROJECT_VERSION: z.string().optional(),
@@ -189,6 +194,8 @@ export const env = createEnv({
         OPENAPI_ENABLED: process.env.OPENAPI_ENABLED,
         API_ENABLED: process.env.API_ENABLED,
         MCP_ENABLED: process.env.MCP_ENABLED,
+
+        DEMO_ENABLED: process.env.DEMO_ENABLED,
 
     },
 });
