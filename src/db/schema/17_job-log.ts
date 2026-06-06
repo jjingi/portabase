@@ -1,5 +1,5 @@
 import {pgTable, uuid, text, integer, pgEnum, bigint, timestamp} from "drizzle-orm/pg-core";
-import { timestamps } from "@/db/schema/00_common";
+import {timestamps} from "@/db/schema/00_common";
 import {backup, restoration} from "@/db/schema/07_database";
 import {createSelectSchema} from "drizzle-zod";
 import {z} from "zod";
@@ -31,7 +31,7 @@ export const jobLog = pgTable(
             onDelete: "cascade",
         }),
 
-        loggedAt: timestamp("logged_at", { withTimezone: true }).notNull(),
+        loggedAt: timestamp("logged_at", {withTimezone: true}).notNull(),
 
         entryType: jobLogEntryTypeEnum("entry_type").notNull(),
         level: jobLogLevelEnum("level").notNull(),
@@ -42,15 +42,14 @@ export const jobLog = pgTable(
         command: text("command"),
         output: text("output"),
         exitCode: integer("exit_code"),
-        durationMs: bigint("duration_ms", { mode: "number" }),
+        durationMs: bigint("duration_ms", {mode: "number"}),
 
         ...timestamps,
     },
-
 );
 
 
-export const jobLogRelations = relations(jobLog, ({ one }) => ({
+export const jobLogRelations = relations(jobLog, ({one}) => ({
     backup: one(backup, {
         fields: [jobLog.backupId],
         references: [backup.id],
