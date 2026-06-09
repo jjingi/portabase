@@ -75,6 +75,7 @@ echo "▶ Starting tusd server..."
 TUSD_BEHIND_PROXY_FLAG=""
 if [ "${TUSD_BEHIND_PROXY:-false}" = "true" ]; then
     TUSD_BEHIND_PROXY_FLAG="--behind-proxy"
+    echo "[INFO] TUSD_BEHIND_PROXY=true, enabling tusd proxy mode"
 fi
 tusd \
     --base-path /tus/files/ \
